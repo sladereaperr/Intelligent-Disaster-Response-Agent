@@ -371,7 +371,10 @@ class DisasterAnalyzerAgent(Agent):
     def __init__(self):
         super().__init__("DisasterAnalyzer")
         self.analyzer = DisasterAnalyzer()
-
+    def summarize_text(self, text: str, max_length: int = 150) -> str:
+        """Delegate to the underlying analyzer's summarize_text method"""
+        return self.analyzer.summarize_text(text, max_length)
+    
     def handle_summarize_text(self, message: Dict[str, Any]) -> Dict[str, Any]:
         text = message["content"].get("text", "")
         max_length = message["content"].get("max_length", 150)
@@ -987,7 +990,7 @@ class TweetScraper:
         driver = webdriver.Chrome(options=self.chrome_options)
 
         # Navigate to Twitter search
-        url = f"https://twitter.com/search?q={search_term}&src=typed_query"
+        url = f"https://x.com/search?q={search_term}&src=typed_query"
         print(f"Opening URL: {url}")
         driver.get(url)
 
@@ -1002,12 +1005,12 @@ class TweetScraper:
 
         time.sleep(5)
 
-        usernamefield = driver.find_element(By.CSS_SELECTOR, '[data-testid="ocfEnterTextTextInput"]')
-        usernamefield.send_keys(usernameee)
-        time.sleep(1)
-        usernamefield.send_keys(Keys.RETURN)
+        # usernamefield = driver.find_element(By.CSS_SELECTOR, '[data-testid="ocfEnterTextTextInput"]')
+        # usernamefield.send_keys(usernameee)
+        # time.sleep(1)
+        # usernamefield.send_keys(Keys.RETURN)
 
-        time.sleep(5)
+        # time.sleep(5)
 
         passfield = driver.find_element(By.NAME, "password")
         passfield.send_keys(password)
@@ -1466,28 +1469,28 @@ def main():
         if st.session_state.mode == "chat":
             st.markdown("### 🤖 General Chat Mode")
 
-            # Microphone Input
-            with st.expander("🎙️ Speak Instead of Typing", expanded=True):
-                audio = AudioInput()
-                if st.button("Start Recording"):
-                    global stop_recording, frames
-                    stop_recording = False
-                    frames = []
+            # # Microphone Input
+            # with st.expander("🎙️ Speak Instead of Typing", expanded=True):
+            #     audio = AudioInput()
+            #     if st.button("Start Recording"):
+            #         global stop_recording, frames
+            #         stop_recording = False
+            #         frames = []
 
-                    listener = keyboard.Listener(on_press=audio.on_press)
-                    listener.start()
+            #         listener = keyboard.Listener(on_press=audio.on_press)
+            #         listener.start()
 
-                    # Start recording in current thread
-                    audio.record()
+            #         # Start recording in current thread
+            #         audio.record()
 
-                    # Transcribe the audio
-                    user_input = audio.transcribe_audio(WAVE_OUTPUT_PATH)
-                    if user_input:
-                        existing_text = st.session_state.get("text_prompt", "")
-                        # Update the text prompt without directly modifying it after widget creation
-                        st.session_state.text_prompt = (existing_text + " " + user_input).strip()
-                        # Use rerun to refresh the UI with the new text
-                        st.rerun()
+            #         # Transcribe the audio
+            #         user_input = audio.transcribe_audio(WAVE_OUTPUT_PATH)
+            #         if user_input:
+            #             existing_text = st.session_state.get("text_prompt", "")
+            #             # Update the text prompt without directly modifying it after widget creation
+            #             st.session_state.text_prompt = (existing_text + " " + user_input).strip()
+            #             # Use rerun to refresh the UI with the new text
+            #             st.rerun()
 
             st.markdown("💬 Type your message:")
             col1, col2 = st.columns([5, 1])
